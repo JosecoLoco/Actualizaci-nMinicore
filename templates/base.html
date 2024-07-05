@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}MiniCore{% endblock %}</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    h1, h2 {
+      color: #333;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .nav {
+      margin-bottom: 20px;
+    }
+    .nav-item {
+      margin-right: 10px;
+    }
+    .nav-link {
+      color: #3498db;
+    }
+    .nav-link:hover {
+      text-decoration: underline;
+    }
+    .highlight-total {
+      color: red; /* Change to the desired highlight color */
+      font-weight: bold;
+      font-size: 1.2em; /* Adjust the size as needed */
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>MiniCore</h1>
+      <ul class="nav">
+        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="/tasks">Tasks</a></li>
+        <li class="nav-item"><a class="nav-link" href="/employees">Employees</a></li>
+        <li class="nav-item"><a class="nav-link" href="/projects">Projects</a></li>
+        <li class="nav-item"><a class="nav-link" href="/overdue-tasks">Overdue Tasks</a></li>
+      </ul>
+    </header>
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+    <footer class="mt-5">
+      <p>&copy; 2024 Flask App</p>
+    </footer>
+  </div>
+</body>
+</html>
