@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, jsonify, redirect, url_fo
 from models import Employee, Task, Project
 from utils.database import db
 from datetime import datetime, timedelta
+import random
 
 main_blueprint = Blueprint('main', __name__)
 
@@ -12,10 +13,27 @@ def calculate_business_days(start_date, end_date):
 
 @main_blueprint.route('/')
 def index():
-    employees = Employee.objects.all()
-    tasks = Task.objects.all()
-    projects = Project.objects.all()
-    return render_template('base.html', employees=employees, tasks=tasks, projects=projects)
+  
+    construction_images = [
+        "https://images.unsplash.com/photo-1503387762-592deb58ef4e",
+        "https://images.unsplash.com/photo-1541888946425-d81bb19240f5",
+        "https://images.unsplash.com/photo-1565008447742-97f6f38c985c",
+        "https://images.unsplash.com/photo-1584622650111-993a426fbf0a",
+        "https://images.unsplash.com/photo-1590644178374-13f44f872a8d",
+        "https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83",
+        "https://images.unsplash.com/photo-1521722776011-39ec91e0c14b"
+    ]
+    random_image = random.choice(construction_images)
+    
+    stats = {
+        'total_tasks': Task.objects.count(),
+        'overdue_tasks': Task.objects(status__ne='Completed', start_date__lt=datetime.now().date()).count(),
+        'completed_tasks': Task.objects(status='Completed').count(),
+        'total_employees': Employee.objects.count(),
+        'total_projects': Project.objects.count()
+    }
+    
+    return render_template('index.html', random_image=random_image, stats=stats)
 
 @main_blueprint.route('/employees', methods=['GET', 'POST'])
 def manage_employees():
@@ -134,19 +152,21 @@ def overdue_tasks():
     }
 
     for task in all_tasks:
-        task_due_date = task.start_date + timedelta(days=task.estimated_days)
-        task.due_date = task_due_date
         task.days_elapsed = (current_date - task.start_date).days
         
         if task.status == 'Completed':
             task.completion_days = task.days_elapsed
             task_status['completed'].append(task)
         elif task.status == 'In Progress':
-            if task_due_date < current_date:
-                task.days_past_due = (current_date - task_due_date).days
+            if task.days_elapsed > task.estimated_days:
+                task.days_past_due = task.days_elapsed - task.estimated_days
                 task.overdue = True
                 task_status['overdue'].append(task)
             else:
                 task_status['in_progress'].append(task)
+        elif task.status == 'Not Started' and task.days_elapsed > 0:
+            task.days_past_due = task.days_elapsed
+            task.overdue = True
+            task_status['overdue'].append(task)
 
     return render_template('overdue_tasks.html', task_status=task_status)
