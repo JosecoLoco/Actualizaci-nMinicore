@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # MiniCore
 
 MiniCore is a Flask-based web application for managing employees, tasks, and projects. It allows users to view overdue tasks within a specified date range, filter tasks based on status and date, and track the progress of various projects.
@@ -113,3 +114,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - [Flask](https://flask.palletsprojects.com/)
 - [SQLAlchemy](https://www.sqlalchemy.org/)
 - [Bootstrap](https://getbootstrap.com/)
+=======
+# Actualizaci-nMinicore
+Tarea en la que debemos actualizar un proyecto antiguo en nuestro computador
+>>>>>>> d26d46e357b81d137a0cae9d6553450afaf69dc1
