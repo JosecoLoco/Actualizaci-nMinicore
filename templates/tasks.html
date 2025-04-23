@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Tareas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Gestión de Tareas</h2>
+        
+        <!-- Formulario para agregar tarea -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Agregar Nueva Tarea</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="description" class="form-label">Descripción</label>
+                            <input type="text" class="form-control" id="description" name="description" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="start_date" class="form-label">Fecha de Inicio</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="estimated_days" class="form-label">Días Estimados</label>
+                            <input type="number" class="form-control" id="estimated_days" name="estimated_days" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="status" class="form-label">Estado</label>
+                            <select class="form-select" id="status" name="status" required>
+                                <option value="Not Started">No Iniciado</option>
+                                <option value="In Progress">En Progreso</option>
+                                <option value="Completed">Completado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="employee_id" class="form-label">Empleado</label>
+                            <select class="form-select" id="employee_id" name="employee_id" required>
+                                {% for employee in employees %}
+                                <option value="{{ employee.id }}">{{ employee.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="project_id" class="form-label">Proyecto</label>
+                            <select class="form-select" id="project_id" name="project_id" required>
+                                {% for project in projects %}
+                                <option value="{{ project.id }}">{{ project.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Agregar Tarea</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tareas por Estado -->
+        {% for status, tasks in tasks_by_status.items() %}
+        <div class="card mb-4">
+            <div class="card-header {% if status == 'Completed' %}bg-success text-white
+                                  {% elif status == 'In Progress' %}bg-warning
+                                  {% else %}bg-secondary text-white{% endif %}">
+                <h4>Tareas {{ status }}</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Descripción</th>
+                                <th>Fecha Inicio</th>
+                                <th>Días Estimados</th>
+                                <th>Días Transcurridos</th>
+                                <th>Empleado</th>
+                                <th>Proyecto</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for task in tasks %}
+                            <tr>
+                                <td>{{ task.description }}</td>
+                                <td>{{ task.start_date.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ task.estimated_days }}</td>
+                                <td>{{ task.days_elapsed }}</td>
+                                <td>{{ task.employee_id.name }}</td>
+                                <td>{{ task.project_id.name }}</td>
+                                <td>
+                                    <a href="{{ url_for('main.edit_task', task_id=task.id) }}" 
+                                       class="btn btn-warning btn-sm">Editar</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

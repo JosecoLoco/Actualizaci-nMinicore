@@ -3,43 +3,123 @@
 {% block title %}Overdue Tasks{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-  <h2>Overdue Tasks</h2>
-  <form method="get" action="/overdue-tasks" class="form-inline mb-3">
-    <div class="form-group mr-2">
-      <label for="start_date" class="mr-2">Start Date:</label>
-      <input type="date" id="start_date" name="start_date" value="{{ request.args.get('start_date', '2024-01-06') }}" class="form-control">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estado de Tareas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Estado de Tareas</h2>
+
+        <!-- Tareas Atrasadas -->
+        <div class="card mb-4">
+            <div class="card-header bg-danger text-white">
+                <h4>Tareas Atrasadas</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Descripción</th>
+                                <th>Fecha Inicio</th>
+                                <th>Días Estimados</th>
+                                <th>Días de Retraso</th>
+                                <th>Empleado</th>
+                                <th>Proyecto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for task in task_status['overdue'] %}
+                            <tr>
+                                <td>{{ task.description }}</td>
+                                <td>{{ task.start_date.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ task.estimated_days }}</td>
+                                <td class="text-danger">{{ task.days_past_due }}</td>
+                                <td>{{ task.employee_id.name }}</td>
+                                <td>{{ task.project_id.name }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tareas en Progreso -->
+        <div class="card mb-4">
+            <div class="card-header bg-warning">
+                <h4>Tareas en Progreso</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Descripción</th>
+                                <th>Fecha Inicio</th>
+                                <th>Días Estimados</th>
+                                <th>Días Transcurridos</th>
+                                <th>Empleado</th>
+                                <th>Proyecto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for task in task_status['in_progress'] %}
+                            <tr>
+                                <td>{{ task.description }}</td>
+                                <td>{{ task.start_date.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ task.estimated_days }}</td>
+                                <td>{{ task.days_elapsed }}</td>
+                                <td>{{ task.employee_id.name }}</td>
+                                <td>{{ task.project_id.name }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tareas Completadas -->
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4>Tareas Completadas</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Descripción</th>
+                                <th>Fecha Inicio</th>
+                                <th>Días Estimados</th>
+                                <th>Días Totales</th>
+                                <th>Empleado</th>
+                                <th>Proyecto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for task in task_status['completed'] %}
+                            <tr>
+                                <td>{{ task.description }}</td>
+                                <td>{{ task.start_date.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ task.estimated_days }}</td>
+                                <td>{{ task.completion_days }}</td>
+                                <td>{{ task.employee_id.name }}</td>
+                                <td>{{ task.project_id.name }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="form-group mr-2">
-      <label for="end_date" class="mr-2">End Date:</label>
-      <input type="date" id="end_date" name="end_date" value="{{ request.args.get('end_date', '2024-01-15') }}" class="form-control">
-    </div>
-    <button type="submit" class="btn btn-primary">Filter</button>
-  </form>
-  <table class="table table-striped table-bordered">
-    <thead class="thead-dark">
-      <tr>
-        <th>Empleado</th>
-        <th>Tarea</th>
-        <th>Fecha Inicio</th>
-        <th>Fecha Fin</th>
-        <th>Días Pasado</th>
-        <th>Proyecto</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for task in tasks %}
-      <tr>
-        <td>{{ task.employee.first_name }} {{ task.employee.last_name }}</td>
-        <td>{{ task.description }}</td>
-        <td>{{ task.start_date.strftime('%m/%d/%Y') }}</td>
-        <td>{{ task.due_date.strftime('%m/%d/%Y') }}</td>
-        <td>{{ task.days_past_due }} días pasado</td>
-        <td>{{ task.project.name }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  <p class="highlight-total">Total tareas pasadas: {{ tasks|length }}</p>
-</div>
+</body>
+</html>
 {% endblock %}
