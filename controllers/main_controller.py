@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, jsonify
 from models import Employee, Task, Project
 from utils.database import db
 from datetime import datetime, timedelta
@@ -12,24 +12,38 @@ def calculate_business_days(start_date, end_date):
 
 @main_blueprint.route('/')
 def index():
-    employees = Employee.query.all()
-    tasks = Task.query.all()
-    projects = Project.query.all()
+    employees = Employee.objects.all()
+    tasks = Task.objects.all()
+    projects = Project.objects.all()
     return render_template('base.html', employees=employees, tasks=tasks, projects=projects)
+
+@main_blueprint.route('/employees')
+def get_employees():
+    employees = Employee.objects.all()
+    return jsonify([emp.serialize() for emp in employees])
+
+@main_blueprint.route('/projects')
+def get_projects():
+    projects = Project.objects.all()
+    return jsonify([proj.serialize() for proj in projects])
+
+@main_blueprint.route('/tasks')
+def get_tasks():
+    tasks = Task.objects.all()
+    return jsonify([task.serialize() for task in tasks])
 
 @main_blueprint.route('/overdue-tasks')
 def overdue_tasks():
     start_date_str = request.args.get('start_date', '2024-01-06')
-    end_date_str = request.args.get('end_date', '2024-01-14')
+    end_date_str = request.args.get('end_date', '2024-12-31')
     start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
     end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
 
-    # Obtén las tareas en progreso dentro del rango de fechas
-    tasks_in_progress = Task.query.filter(
-        Task.status == 'In progress',
-        Task.start_date >= start_date,
-        Task.start_date <= end_date
-    ).all()
+    tasks_in_progress = Task.objects(
+        status='In progress',
+        start_date__gte=start_date,
+        start_date__lte=end_date
+    )
 
     overdue_tasks = []
     for task in tasks_in_progress:

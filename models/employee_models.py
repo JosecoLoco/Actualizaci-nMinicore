@@ -1,17 +1,16 @@
 from utils.database import db
 
-class Employee(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(50))
-    last_name = db.Column(db.String(50))
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    
-    tasks = db.relationship('Task', back_populates='employee')
+class Employee(db.Document):
+    name = db.StringField(required=True, max_length=100)
+    email = db.StringField(required=True, max_length=120, unique=True)
+    role = db.StringField(required=True, max_length=50)
+
+    meta = {'collection': 'employees'}
 
     def serialize(self):
         return {
-            'id': self.id,
-            'first_name': self.first_name,
-            'last_name': self.last_name,
-            'username': self.username
+            "id": str(self.id),
+            "name": self.name,
+            "email": self.email,
+            "role": self.role
         }
